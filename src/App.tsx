@@ -1,36 +1,41 @@
 import React, { useState } from 'react';
-import { Scale } from 'lucide-react';
 import { ConversionForm } from './components/ConversionForm';
 import { Result } from './components/Result';
+import { RecipeResult } from './components/RecipeResult';
+import { RecipeAnalysis } from './utils/gemini';
 
-function App() {
+export default function App() {
   const [grams, setGrams] = useState<number | null>(null);
+  const [ingredient, setIngredient] = useState<string>('');
+  const [recipeAnalysis, setRecipeAnalysis] = useState<RecipeAnalysis | null>(null);
+
+  const handleConversion = (convertedGrams: number) => {
+    setGrams(convertedGrams);
+    setRecipeAnalysis(null);
+  };
+
+  const handleRecipeAnalysis = (analysis: RecipeAnalysis) => {
+    setRecipeAnalysis(analysis);
+    setGrams(null);
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 py-12 px-4">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
-          <div className="flex items-center justify-center mb-4">
-            <Scale className="w-12 h-12 text-blue-500" />
-          </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Baking Converter
-          </h1>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Convert vague baking measurements into precise gram measurements for consistent, perfect results every time.
-          </p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Baking Assistant</h1>
+          <p className="text-lg text-gray-600">Convert measurements and analyze recipes</p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-xl p-8 mb-8 transform hover:scale-[1.01] transition-transform duration-200">
-          <ConversionForm onConvert={setGrams} />
+        <div className="max-w-xl mx-auto space-y-8">
+          <ConversionForm 
+            onConvert={handleConversion}
+            onRecipeAnalysis={handleRecipeAnalysis}
+          />
+          {grams !== null && <Result grams={grams} ingredient={ingredient} />}
+          {recipeAnalysis && <RecipeResult analysis={recipeAnalysis} />}
         </div>
-
-        {grams !== null && (
-          <Result grams={grams} />
-        )}
       </div>
     </div>
   );
 }
-
-export default App;
