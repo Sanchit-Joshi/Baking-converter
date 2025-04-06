@@ -17,7 +17,7 @@ export async function getConversionFromGemini(ingredient: string, amount: number
 }
 
 export async function getBakingTips(ingredient: string) {
-  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
   const prompt = `Provide a short baking tip for using ${ingredient} in recipes.`;
 
@@ -37,18 +37,26 @@ export interface RecipeAnalysis {
 }
 
 export async function analyzeRecipe(recipeText: string): Promise<RecipeAnalysis> {
-  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-  const prompt = `Analyze this recipe and provide a structured response with the following information:
-    - Title of the dish
-    - Brief description
-    - List of ingredients with measurements
-    - Step-by-step instructions
-    - 3 helpful tips for best results
-    - Estimated cooking time
-    - Difficulty level (Easy/Medium/Hard)
+  const prompt = `Analyze this recipe and format it into a clear structure. Please provide:
 
-    Recipe: ${recipeText}`;
+Title: [Title of the dish]
+Description: [A brief description]
+Cooking Time: [Estimated time]
+Difficulty: [Easy/Medium/Hard]
+
+Ingredients:
+[List each ingredient with measurements on new lines, prefixed with -]
+
+Instructions:
+[Number each step, starting from 1]
+
+Pro Tips:
+[List 3 tips, each prefixed with -]
+
+Analyze this recipe:
+${recipeText}`;
 
   const result = await model.generateContent(prompt);
   const response = await result.response;
